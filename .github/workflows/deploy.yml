@@ -1,0 +1,38 @@
+# .github/workflows/deploy.yml
+
+name: Deploy Pac-Man to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read    # needed for checkout
+  pages: write      # needed to publish to Pages
+  id-token: write   # needed by configure-pages
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v2
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: .         # point at your index.html + assets
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
